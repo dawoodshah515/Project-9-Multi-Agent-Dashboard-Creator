@@ -1,12 +1,19 @@
+# =======================
 # Python
+# =======================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
+
+# Virtual Environments
+.venv/
 venv/
+env/
 ENV/
+
+# Build
 build/
 develop-eggs/
 dist/
@@ -23,17 +30,30 @@ wheels/
 .installed.cfg
 *.egg
 
+# =======================
+# Sensitive Files
+# =======================
+.env
+*.env
+.env.*
+
+# =======================
 # Generated files
+# =======================
 dashboard.py
 *.pdf
 
+# =======================
 # IDE
+# =======================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# =======================
+# OS files
+# =======================
 .DS_Store
 Thumbs.db
