@@ -19,7 +19,13 @@ except:
 load_dotenv()
 
 # Initialize GROQ client (use your API key)
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key or api_key == "your_actual_api_key_here":
+    st.error("❌ GROQ_API_KEY not configured. Please set your API key in the .env file.")
+    st.info("Steps to fix:\n1. Get your API key from https://console.groq.com\n2. Add it to the .env file:\nGROQ_API_KEY=your_key_here\n3. Restart the app")
+    st.stop()
+
+client = Groq(api_key=api_key)
 
 # Page config
 st.set_page_config(
