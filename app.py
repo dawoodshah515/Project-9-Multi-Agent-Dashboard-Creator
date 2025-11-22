@@ -20,12 +20,16 @@ load_dotenv()
 
 # Initialize GROQ client (use your API key)
 api_key = os.getenv("GROQ_API_KEY")
-if not api_key or api_key == "your_actual_api_key_here":
+if not api_key:
     st.error("❌ GROQ_API_KEY not configured. Please set your API key in the .env file.")
     st.info("Steps to fix:\n1. Get your API key from https://console.groq.com\n2. Add it to the .env file:\nGROQ_API_KEY=your_key_here\n3. Restart the app")
     st.stop()
 
-client = Groq(api_key=api_key)
+try:
+    client = Groq(api_key=api_key)
+except Exception as e:
+    st.error(f"❌ Error initializing Groq client: {str(e)}")
+    st.stop()
 
 # Page config
 st.set_page_config(
@@ -310,8 +314,8 @@ def agent_1_analyze_data(df):
             max_tokens=300
         )
         insights = response.choices[0].message.content
-    except:
-        insights = "Data analysis complete. Check for missing values and ensure proper data types."
+    except Exception as e:
+        insights = f"⚠️ Could not generate insights. Error: {str(e)[:100]}. Please check your API key and rate limits."
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Rows", f"{analysis['shape'][0]:,}")
@@ -340,13 +344,15 @@ def agent_2_plan_dashboard(analysis):
             max_tokens=400
         )
         plan = response.choices[0].message.content
-    except:
-        plan = """Visualization Plan:
-        - Bar Chart 1: Distribution of categorical features
-        - Bar Chart 2: Top values comparison
-        - Line Chart: Trend analysis
-        - Pie Chart 1: Category proportions
-        - Pie Chart 2: Segment distribution"""
+    except Exception as e:
+        plan = f"""⚠️ Could not generate visualization plan: {str(e)[:100]}
+
+Fallback Visualization Plan:
+- Bar Chart 1: Distribution of categorical features
+- Bar Chart 2: Top values comparison
+- Line Chart: Trend analysis
+- Pie Chart 1: Category proportions
+- Pie Chart 2: Segment distribution"""
 
     st.success(plan)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -483,9 +489,9 @@ def agent_6_customize_insights(df, analysis, user_prompt):
         st.markdown('<div class="custom-insight-box">', unsafe_allow_html=True)
         st.write(custom_insights)
         st.markdown('</div>', unsafe_allow_html=True)
-    except:
-        custom_insights = "Unable to generate insights. Showing fallback message."
-        st.info(custom_insights)
+    except Exception as e:
+        custom_insights = f"⚠️ Could not generate custom insights: {str(e)[:100]}. Please check your API key."
+        st.error(custom_insights)
     st.markdown('</div>', unsafe_allow_html=True)
     return custom_insights
 
